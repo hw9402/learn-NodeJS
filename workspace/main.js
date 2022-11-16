@@ -9,32 +9,16 @@ var app = http.createServer((request,response) => {
     
     if(pathname === '/') {
       if(queryData.id === undefined) {
-        var title = 'Welcome';
-        var description = 'Hello, Node.js';
-        var templete = `
-          <!doctype html>
-          <html>
-          <head>
-            <title>WEB1 - ${title}</title>
-            <meta charset="utf-8">
-          </head>
-          <body>
-            <h1><a href="/">WEB</a></h1>
-            <ol>
-              <li><a href="/?id=HTML">HTML</a></li>
-              <li><a href="/?id=CSS">CSS</a></li>
-              <li><a href="/?id=JavaScript">JavaScript</a></li>
-            </ol>
-            <h2>${title}</h2>
-            <p>${description}</p>
-          </body>
-          </html>    
-        `;
-        response.writeHead(200);
-        response.end(templete);
-      } else {
-        fs.readFile(`./data/${queryData.id}`, 'utf-8', (err, description) => {
-          var title = queryData.id;
+        fs.readdir('./data', (err, filelist) => {
+          var title = 'Welcome';
+          var description = 'Hello, Node.js';
+          var list = '<ul>';
+          var i=0;
+          while(i < filelist.length) {
+            list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+            i += 1;
+          }
+          list = list+'</ul>';
           var templete = `
             <!doctype html>
             <html>
@@ -44,11 +28,7 @@ var app = http.createServer((request,response) => {
             </head>
             <body>
               <h1><a href="/">WEB</a></h1>
-              <ol>
-                <li><a href="/?id=HTML">HTML</a></li>
-                <li><a href="/?id=CSS">CSS</a></li>
-                <li><a href="/?id=JavaScript">JavaScript</a></li>
-              </ol>
+              ${list}
               <h2>${title}</h2>
               <p>${description}</p>
             </body>
@@ -56,6 +36,38 @@ var app = http.createServer((request,response) => {
           `;
           response.writeHead(200);
           response.end(templete);
+        });
+      } else {
+        fs.readdir('./data', (err, filelist) => {
+          var title = 'Welcome';
+          var description = 'Hello, Node.js';
+          var list = '<ul>';
+          var i=0;
+          while(i < filelist.length) {
+            list = list + `<li><a href="/?id=${filelist[i]}">${filelist[i]}</a></li>`;
+            i += 1;
+          }
+          list = list+'</ul>';
+          fs.readFile(`./data/${queryData.id}`, 'utf-8', (err, description) => {
+            var title = queryData.id;
+            var templete = `
+              <!doctype html>
+              <html>
+              <head>
+                <title>WEB1 - ${title}</title>
+                <meta charset="utf-8">
+              </head>
+              <body>
+                <h1><a href="/">WEB</a></h1>
+                ${list}
+                <h2>${title}</h2>
+                <p>${description}</p>
+              </body>
+              </html>    
+            `;
+            response.writeHead(200);
+            response.end(templete);
+          });
         });
       }
     } else {
