@@ -13,6 +13,7 @@ function templeteHTML(title, list, body) {
     <body>
       <h1><a href="/">WEB</a></h1>
       ${list}
+      <a href="/create">create</a>
       ${body}
     </body>
     </html>    
@@ -57,6 +58,25 @@ var app = http.createServer((request,response) => {
           });
         });
       }
+    } else if(pathname === '/create') {
+      fs.readdir('./data', (err, filelist) => {
+        var title = 'Welcome';
+        var description = 'Hello, Node.js';
+        var list = templeteList(filelist);
+        var templete = templeteHTML(title, list, `
+          <form action="http://localhost:3000/process create" method="post">
+            <p><input type="text" name="title" placeholder="title"></p>
+            <p>
+              <textarea name="description" placeholder="description"></textarea>
+            </p>
+            <p>
+              <input type="submit">
+            </p>
+          </form>
+        `);
+        response.writeHead(200);
+        response.end(templete);
+      });
     } else {
       response.writeHead(404);
       response.end("Not found");
